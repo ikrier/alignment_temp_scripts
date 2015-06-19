@@ -45,3 +45,4 @@ java -jar /data/software/picard/dist/picard.jar MarkDuplicates I=$3 O=$3temp M=$
 
 mv $3temp $3
 
+samtools index $3
