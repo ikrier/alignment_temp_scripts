@@ -1,5 +1,6 @@
 #!/bin/bash
-:' The code should do the following :
+<<"COMMENT"
+The code should do the following :
 Run alignment using bwa on the input fastq files for read1 and read2 in that order
 then sort the file
 then apply picard to mark duplicates in the file
@@ -22,7 +23,7 @@ This program is free software: you can redistribute it and/or modify
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'
+COMMENT
 
 usage ()
 {
@@ -37,12 +38,14 @@ fi
 
 echo "Running bwa mem on" $1 "and" $2 "to create "$3
 
-bwa mem -t 4 -M /data/genomes/Broadhs37/hs37d5.fa.gz $1 $2 2>&1 |samtools view -bSu - |samtools sort - -f $3
+bwa mem -t 4 -M /data/genomes/Broadhs37/hs37d5.fa.gz $1 $2 2>$3.out|samtools view -bSu - |samtools sort - -f $3
 
 samtools index $3
 
-#java -jar /data/software/picard/dist/picard.jar MarkDuplicates I=$3 O=$3temp M=$3.metrics
+java -jar /data/software/picard/dist/picard.jar MarkDuplicates I=$3 O=$3temp M=$3.metrics &>>$3.out
 
-#mv $3temp $3
+mv $3temp $3
 
-#samtools index $3
+samtools index $3
+
+cat $3.out
