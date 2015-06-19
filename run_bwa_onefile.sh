@@ -37,12 +37,12 @@ fi
 
 echo "Running bwa mem on" $1 "and" $2 "to create "$3
 
-bwa mem -t 4 -M /data/genomes/Broadhs37/hs37d5.fa.gz $1 $2 |samtools view -bSu - |samtools sort - -f $3
+bwa mem -t 4 -M /data/genomes/Broadhs37/hs37d5.fa.gz $1 $2 2>&1 |samtools view -bSu - |samtools sort - -f $3
 
 samtools index $3
 
-java -jar /data/software/picard/dist/picard.jar MarkDuplicates I=$3 O=$3temp M=$3.metrics
+#java -jar /data/software/picard/dist/picard.jar MarkDuplicates I=$3 O=$3temp M=$3.metrics
 
-mv $3temp $3
+#mv $3temp $3
 
-samtools index $3
+#samtools index $3
