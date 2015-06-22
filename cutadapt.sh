@@ -1,5 +1,6 @@
 #!/bin/bash
-:' The code should do the following :
+<<"COMMENT"
+ The code should do the following :
 Remove Illumina adaptors from the fastq files.
 Remove the first 5bp of each read as they contain the restriction enzyme recognition sequences and therefore no mismatch will be mapped there.
 
@@ -21,7 +22,7 @@ This program is free software: you can redistribute it and/or modify
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'
+COMMENT
 
 
 usage ()
@@ -35,8 +36,11 @@ then
   usage
 fi
 
-name1=${1%%.*}
-name2=${2%%.*}
+file1=$(basename $1)
+file2=$(basename $2)
+
+name1=${file1%%.*}
+name2=${file2%%.*}
 
 echo $name1
 echo $name2
@@ -44,12 +48,13 @@ echo $name2
 echo "Running cutadapt on" $1 "and" $2 "to create "$name1.$3.fastq.gz and $name2.$3.fastq.gz
 
 
-cutadapt -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT $1 $2 -o $name1.$3.fastq.gz -p $name2.$3.fastq.gz -m 20
+cutadapt -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATT $1 $2 -o $name1.$3.fastq.gz -p $name2.$3.fastq.gz -m 20 &>$3.out
 
 #for optional trimming :
-cutadapt -u $4 -o $name1.$3.trim5.fastq.gz $name1.$3.fastq.gz
-cutadapt -u $4 -o $name2.$3.trim5.fastq.gz $name2.$3.fastq.gz
+cutadapt -u $4 -o $name1.$3.trim5.fastq.gz $name1.$3.fastq.gz &>>$3.out
+cutadapt -u $4 -o $name2.$3.trim5.fastq.gz $name2.$3.fastq.gz &>>$3.out
 
 mv $name1.$3.trim5.fastq.gz $name1.$3.fastq.gz
 mv $name2.$3.trim5.fastq.gz $name2.$3.fastq.gz
 
+cat $3.out
